@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Geologi: Rahasia Batuan di Sekitar Kita</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Plus Jakarta Sans & Fredoka -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        },
+                        earth: {
+                            100: '#fef3c7',
+                            500: '#d97706',
+                            700: '#b45309',
+                        },
+                        rock: {
+                            beku: '#ef4444',
+                            sedimen: '#f59e0b',
+                            metamorf: '#8b5cf6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        heading: ['Fredoka', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        .heading-font {
+            font-family: 'Fredoka', cursive;
+        }
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15);
+        }
+        .tab-btn.active {
+            background-color: #0284c7;
+            color: white;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo & Title -->
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-red-500 flex items-center justify-center text-white text-2xl shadow-md transform -rotate-3">
+                        <i class="fa-solid font-bold fa-mountain-sun"></i>
+                    </div>
+                    <div>
+                        <h1 class="heading-font text-2xl text-slate-800 font-bold leading-tight">GeoGeo! <span class="text-sky-600 text-lg">Kelas X SMA</span></h1>
+                        <p class="text-xs text-slate-500 font-medium">Petualangan Menjelajah Jenis Batuan</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="hidden md:flex gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                    <button onclick="switchTab('apersepsi')" id="nav-apersepsi" class="tab-btn active px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-compass"></i> Awal & Kontekstual
+                    </button>
+                    <button onclick="switchTab('materi')" id="nav-materi" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group"></i> Jenis Batuan
+                    </button>
+                    <button onclick="switchTab('kolaborasi')" id="nav-kolaborasi" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-users"></i> Diskusi Kelompok
+                    </button>
+                    <button onclick="switchTab('kuis')" id="nav-kuis" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-gamepad text-amber-500"></i> Kuis Interaktif
+                    </button>
+                </nav>
+
+                <!-- Audio / Guru Badge -->
+                <div class="flex items-center gap-3">
+                    <div class="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full flex items-center gap-2 text-xs text-amber-800 font-medium">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                        <span class="hidden sm:inline">Pak/Bu Guru Geografi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Bar -->
+        <div class="md:hidden flex overflow-x-auto bg-slate-100 p-2 border-t border-slate-200 justify-between gap-1 text-xs font-semibold">
+            <button onclick="switchTab('apersepsi')" class="flex-1 py-2 px-1 text-center rounded-lg bg-white shadow-sm whitespace-nowrap">Kontekstual</button>
+            <button onclick="switchTab('materi')" class="flex-1 py-2 px-1 text-center rounded-lg text-slate-600 whitespace-nowrap">Materi</button>
+            <button onclick="switchTab('kolaborasi')" class="flex-1 py-2 px-1 text-center rounded-lg text-slate-600 whitespace-nowrap">Kelompok</button>
+            <button onclick="switchTab('kuis')" class="flex-1 py-2 px-1 text-center rounded-lg text-slate-600 font-bold text-amber-600 whitespace-nowrap">Kuis</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ================= SECTION 1: APERSEPSI & KONTEKS SEHARI-HARI ================= -->
+        <section id="sec-apersepsi" class="space-y-8 animate-fade-in">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-sky-600 via-indigo-600 to-slate-800 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-10 translate-x-10 -translate-y-10 pointer-events-none">
+                    <i class="fa-solid fa-gem text-9xl"></i>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-sky-400/30 text-sky-200 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-sky-300/30">
+                        Geografi SMA Kelas X • Litosfer
+                    </span>
+                    <h2 class="heading-font text-3xl sm:text-5xl font-bold mt-4 mb-3 leading-tight">
+                        Pernahkah Kamu Berpikir, Dari Mana Asal Lantai Marmer dan Cobek di Rumahmu? 🌋
+                    </h2>
+                    <p class="text-sky-100 text-base sm:text-lg mb-6 leading-relaxed">
+                        Batu bukan cuma benda keras di pinggir jalan! Seluruh peradaban, bangunan tempat tinggalmu, bahkan pensil yang kamu pakai sekolah dibuat dari **batuan**.
+                    </p>
+                    <button onclick="switchTab('materi')" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-6 py-3 rounded-2xl shadow-lg transition-all flex items-center gap-2 transform active:scale-95">
+                        Mulai Petualangan Batuan <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contextual Daily Objects Grid -->
+            <div>
+                <div class="text-center max-w-2xl mx-auto mb-8">
+                    <h3 class="heading-font text-2xl font-bold text-slate-800">Detektif Batuan di Rumah & Sekolah!</h3>
+                    <p class="text-slate-600 text-sm mt-1">Klik benda sehari-hari di bawah ini untuk membongkar jenis batuan penyusunnya!</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Object 1 -->
+                    <div onclick="openModalObject('cobek')" class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm card-hover cursor-pointer group">
+                        <div class="w-full h-40 bg-red-50 rounded-xl overflow-hidden mb-4 flex items-center justify-center relative">
+                            <img src="https://images.unsplash.com/photo-1590736969955-71cc94801759?w=500&auto=format&fit=crop&q=80" alt="Cobek Batu Andesit" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x300/ef4444/white?text=Cobek+Batu'">
+                            <span class="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">Batuan Beku</span>
+                        </div>
+                        <h4 class="font-bold text-lg text-slate-800 mb-1 group-hover:text-sky-600 transition-colors">Cobek Sambal & Batu Candi</h4>
+                        <p class="text-slate-500 text-xs line-clamp-2">Terbuat dari Batu Andesit yang sangat keras hasil pembekuan lava gunung api.</p>
+                        <div class="mt-4 flex justify-between items-center text-xs font-semibold text-sky-600">
+                            <span>Pelajari Asalnya</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- Object 2 -->
+                    <div onclick="openModalObject('marmer')" class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm card-hover cursor-pointer group">
+                        <div class="w-full h-40 bg-purple-50 rounded-xl overflow-hidden mb-4 flex items-center justify-center relative">
+                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&auto=format&fit=crop&q=80" alt="Lantai Marmer" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x300/8b5cf6/white?text=Lantai+Marmer'">
+                            <span class="absolute top-2 right-2 bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">Batuan Metamorf</span>
+                        </div>
+                        <h4 class="font-bold text-lg text-slate-800 mb-1 group-hover:text-sky-600 transition-colors">Lantai & Meja Marmer</h4>
+                        <p class="text-slate-500 text-xs line-clamp-2">Batu kapur yang berubah wujud karena suhu dan tekanan ekstrem bumi!</p>
+                        <div class="mt-4 flex justify-between items-center text-xs font-semibold text-sky-600">
+                            <span>Pelajari Asalnya</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- Object 3 -->
+                    <div onclick="openModalObject('pensil')" class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm card-hover cursor-pointer group">
+                        <div class="w-full h-40 bg-amber-50 rounded-xl overflow-hidden mb-4 flex items-center justify-center relative">
+                            <img src="https://images.unsplash.com/photo-1585336261026-8f57857a47ef?w=500&auto=format&fit=crop&q=80" alt="Isi Pensil Grafit" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x300/f59e0b/white?text=Pensil+Grafit'">
+                            <span class="absolute top-2 right-2 bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">Batuan Metamorf</span>
+                        </div>
+                        <h4 class="font-bold text-lg text-slate-800 mb-1 group-hover:text-sky-600 transition-colors">Isi Pensil 2B (Grafit)</h4>
+                        <p class="text-slate-500 text-xs line-clamp-2">Berasal dari batubara/karbon yang metamorfosis menjadi serat halus grafit.</p>
+                        <div class="mt-4 flex justify-between items-center text-xs font-semibold text-sky-600">
+                            <span>Pelajari Asalnya</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- Object 4 -->
+                    <div onclick="openModalObject('batako')" class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm card-hover cursor-pointer group">
+                        <div class="w-full h-40 bg-slate-100 rounded-xl overflow-hidden mb-4 flex items-center justify-center relative">
+                            <img src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=500&auto=format&fit=crop&q=80" alt="Batu Apung & Semen" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x300/0284c7/white?text=Semen+Batu'">
+                            <span class="absolute top-2 right-2 bg-amber-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">Batuan Sedimen</span>
+                        </div>
+                        <h4 class="font-bold text-lg text-slate-800 mb-1 group-hover:text-sky-600 transition-colors">Semen & Kapur Tulis</h4>
+                        <p class="text-slate-500 text-xs line-clamp-2">Dibuat dari batu gamping/kapur hasil endapan fosil laut ribuan tahun.</p>
+                        <div class="mt-4 flex justify-between items-center text-xs font-semibold text-sky-600">
+                            <span>Pelajari Asalnya</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 2: MATERI JENIS & SIKLUS BATUAN ================= -->
+        <section id="sec-materi" class="space-y-8 hidden">
+            <!-- Header Section -->
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+                <div>
+                    <span class="text-xs font-bold text-sky-600 bg-sky-50 px-3 py-1 rounded-full">Konsep Utama Litosfer</span>
+                    <h2 class="heading-font text-3xl font-bold text-slate-800 mt-2">Klasifikasi & Siklus Batuan</h2>
+                    <p class="text-slate-600 text-sm mt-1">Batuan terbentuk melalui proses alamiah yang terus berputar dalam **Siklus Batuan**.</p>
+                </div>
+                <!-- Category Filter Buttons -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterRock('all')" class="rock-filter active bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition">Semua Jenis</button>
+                    <button onclick="filterRock('beku')" class="rock-filter bg-red-100 text-red-700 hover:bg-red-200 px-4 py-2 rounded-xl text-xs font-bold transition">🔥 Batuan Beku</button>
+                    <button onclick="filterRock('sedimen')" class="rock-filter bg-amber-100 text-amber-700 hover:bg-amber-200 px-4 py-2 rounded-xl text-xs font-bold transition">⏳ Batuan Sedimen</button>
+                    <button onclick="filterRock('metamorf')" class="rock-filter bg-purple-100 text-purple-700 hover:bg-purple-200 px-4 py-2 rounded-xl text-xs font-bold transition">💎 Batuan Metamorf</button>
+                </div>
+            </div>
+
+            <!-- Siklus Batuan Interactive Interactive Schema -->
+            <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-6 sm:p-8 shadow-lg">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-rotate"></i>
+                    </div>
+                    <div>
+                        <h3 class="heading-font text-xl font-bold">Visualisasi Siklus Batuan (Rock Cycle)</h3>
+                        <p class="text-xs text-slate-400">Klik tiap tahapan untuk memahami bagaimana batu bisa berpindah jenis!</p>
+                    </div>
+                </div>
+
+                <!-- Interactive Workflow -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                    <!-- Step 1 -->
+                    <div onclick="showCycleDetail('magma')" class="bg-slate-800/80 hover:bg-slate-700/80 p-4 rounded-2xl border border-slate-700 cursor-pointer transition">
+                        <div class="text-3xl mb-2">🌋</div>
+                        <h4 class="font-bold text-sm text-red-400">Magma & Lava</h4>
+                        <p class="text-xs text-slate-300 mt-1">Cairan pijar panas di perut bumi mengkristal dan membeku.</p>
+                        <span class="inline-block mt-3 text-[10px] bg-red-500/20 text-red-300 font-semibold px-2.5 py-0.5 rounded-full">Pendinginan</span>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div onclick="showCycleDetail('beku')" class="bg-slate-800/80 hover:bg-slate-700/80 p-4 rounded-2xl border border-slate-700 cursor-pointer transition">
+                        <div class="text-3xl mb-2">🪨</div>
+                        <h4 class="font-bold text-sm text-red-400">Batuan Beku</h4>
+                        <p class="text-xs text-slate-300 mt-1">Mengalami pelapukan, erosi, dan terbawa air/angin.</p>
+                        <span class="inline-block mt-3 text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-2.5 py-0.5 rounded-full">Pelapukan & Erosi</span>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div onclick="showCycleDetail('sedimen')" class="bg-slate-800/80 hover:bg-slate-700/80 p-4 rounded-2xl border border-slate-700 cursor-pointer transition">
+                        <div class="text-3xl mb-2">🏞️</div>
+                        <h4 class="font-bold text-sm text-amber-400">Batuan Sedimen</h4>
+                        <p class="text-xs text-slate-300 mt-1">Hasil pengendapan berlapis yang memadat dan mengeras.</p>
+                        <span class="inline-block mt-3 text-[10px] bg-purple-500/20 text-purple-300 font-semibold px-2.5 py-0.5 rounded-full">Suhu & Tekanan Tinggi</span>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div onclick="showCycleDetail('metamorf')" class="bg-slate-800/80 hover:bg-slate-700/80 p-4 rounded-2xl border border-slate-700 cursor-pointer transition">
+                        <div class="text-3xl mb-2">💎</div>
+                        <h4 class="font-bold text-sm text-purple-400">Batuan Metamorf</h4>
+                        <p class="text-xs text-slate-300 mt-1">Batu malihan yang berubah bentuk. Jika meleleh kembali jadi Magma!</p>
+                        <span class="inline-block mt-3 text-[10px] bg-sky-500/20 text-sky-300 font-semibold px-2.5 py-0.5 rounded-full">Pelelehan Kembali</span>
+                    </div>
+                </div>
+
+                <div id="cycle-detail-box" class="mt-6 p-4 rounded-2xl bg-slate-800/90 border border-slate-700 text-xs text-slate-300 hidden">
+                    <p id="cycle-detail-text"></p>
+                </div>
+            </div>
+
+            <!-- Rock Cards Gallery -->
+            <div id="rock-gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically Inserted or Pre-rendered Rocks -->
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: AKTIVITAS KOLABORATIF KELOMPOK ================= -->
+        <section id="sec-kolaborasi" class="space-y-8 hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-800 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+                <div class="max-w-3xl">
+                    <span class="bg-emerald-400/30 text-emerald-100 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-300/30">
+                        Aktivitas Kelompok (Problem Based Learning)
+                    </span>
+                    <h2 class="heading-font text-2xl sm:text-4xl font-bold mt-3 mb-2">Misi Konsultan Geologi Muda 🕵️‍♂️</h2>
+                    <p class="text-emerald-100 text-sm leading-relaxed">
+                        Bentuk kelompok berisi 3-4 siswa. Pilih salah satu kasus studi kehidupan nyata di bawah ini, diskusikan, dan selesaikan tantangannya!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Case Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Case 1 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-xl mb-4 font-bold">
+                            1
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">Kasus Renovasi Candi Kebudayaan</h3>
+                        <p class="text-slate-600 text-xs leading-relaxed mb-4">
+                            Pemerintah ingin merenovasi bagian dinding candi bersejarah yang rusak akibat pelapukan. Batuan jenis apa yang harus dipilih agar kuat, tahan cuaca, dan sesuai dengan batuan aslinya?
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-700">
+                        <strong>Tugas Kelompok:</strong> Identifikasi nama batuannya, kelompokkan jenisnya, dan sebutkan alasan kekuatannya!
+                    </div>
+                </div>
+
+                <!-- Case 2 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl mb-4 font-bold">
+                            2
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">Kasus Pembangunan Gedung Mewah</h3>
+                        <p class="text-slate-600 text-xs leading-relaxed mb-4">
+                            Seorang arsitek membutuhkan material lantai berkelas tinggi yang mengkilap, tahan panas, dan estetis untuk hotel bintang lima.
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-700">
+                        <strong>Tugas Kelompok:</strong> Rekomendasikan batuan metamorf yang tepat dan jelaskan bagaimana batu tersebut terbentuk!
+                    </div>
+                </div>
+
+                <!-- Case 3 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl mb-4 font-bold">
+                            3
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-800 mb-2">Kasus Pembangkit Listrik & Tambang</h3>
+                        <p class="text-slate-600 text-xs leading-relaxed mb-4">
+                            Sebuah daerah memiliki cadangan Batubara yang melimpah. Warga ingin tahu berasal dari jenis batuan apa dan bagaimana proses terbentuknya.
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-700">
+                        <strong>Tugas Kelompok:</strong> Analisis asal-usul batubara (organik/sedimen) dan potensi dampaknya!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Group Notes & Worksheet -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+                <h3 class="heading-font text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-sky-600"></i> Lembar Kerja Diskusi Kelompok
+                </h3>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Kelompok / Anggota:</label>
+                            <input type="text" id="group-name" placeholder="Misal: Kelompok Andesit (Budi, Siti, Rian)" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Pilihan Nomor Kasus:</label>
+                            <select id="group-case" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                <option value="1">Kasus 1 - Renovasi Candi Kebudayaan</option>
+                                <option value="2">Kasus 2 - Pembangunan Gedung Mewah</option>
+                                <option value="3">Kasus 3 - Pembangkit Listrik & Tambang</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Hasil Solusi & Analisis Geologi Kelompok:</label>
+                        <textarea id="group-answer" rows="4" placeholder="Tuliskan jawaban diskusi kelompokmu di sini..." class="w-full p-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
+                    </div>
+                    <button onclick="submitGroupWork()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl text-sm transition shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Simpan & Tampilkan Presentasi
+                    </button>
+                </div>
+
+                <!-- Display Saved Result -->
+                <div id="saved-result" class="mt-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 hidden">
+                    <h4 class="font-bold text-emerald-900 text-sm mb-1" id="res-group-title"></h4>
+                    <p class="text-xs text-emerald-800 whitespace-pre-line" id="res-group-body"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 4: KUIS INTERAKTIF BERGAMBAR ================= -->
+        <section id="sec-kuis" class="space-y-8 hidden">
+            <!-- Quiz Start Header -->
+            <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 rounded-3xl p-6 sm:p-8 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-6">
+                <div>
+                    <span class="bg-white/20 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full backdrop-blur-sm">
+                        Uji Pemahaman Gamifikasi
+                    </span>
+                    <h2 class="heading-font text-3xl font-bold mt-2">Kuis Interaktif Tebak Batuan 🎮</h2>
+                    <p class="text-amber-100 text-sm mt-1">Uji kemampuan geologimu melalui tebak gambar, identifikasi jenis batuan, dan manfaatnya!</p>
+                </div>
+                <div id="score-badge" class="bg-white text-slate-800 px-6 py-3 rounded-2xl font-bold text-center shadow-md">
+                    <span class="text-xs text-slate-500 block uppercase tracking-wider">Skor Kamu</span>
+                    <span id="current-score" class="text-3xl heading-font text-amber-600">0</span>
+                </div>
+            </div>
+
+            <!-- Quiz Box Area -->
+            <div id="quiz-container" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-md">
+                <!-- Question Number & Progress Bar -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center text-xs font-bold text-slate-500 mb-2">
+                        <span id="quiz-progress-text">Pertanyaan 1 dari 5</span>
+                        <span id="quiz-category-tag" class="text-sky-600 bg-sky-50 px-2.5 py-1 rounded-md">Identifikasi Batuan</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                        <div id="quiz-progress-bar" class="bg-amber-500 h-full w-1/5 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Question Body -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <!-- Image Area -->
+                    <div class="w-full h-64 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 flex items-center justify-center relative shadow-inner">
+                        <img id="quiz-image" src="" alt="Gambar Batuan" class="w-full h-full object-cover">
+                    </div>
+
+                    <!-- Question & Options -->
+                    <div>
+                        <h3 id="quiz-question" class="font-bold text-lg text-slate-800 mb-6">Loading pertanyaan...</h3>
+                        <div id="quiz-options" class="space-y-3">
+                            <!-- Options rendered dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explanation Box -->
+                <div id="quiz-feedback" class="mt-6 p-4 rounded-2xl hidden transition-all">
+                    <h4 id="feedback-title" class="font-bold text-sm mb-1"></h4>
+                    <p id="feedback-text" class="text-xs leading-relaxed"></p>
+                    <button id="next-btn" onclick="nextQuestion()" class="mt-4 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition">
+                        Lanjut Pertanyaan Berikutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Box -->
+            <div id="quiz-result" class="bg-white rounded-3xl p-8 border border-slate-200 shadow-md text-center hidden space-y-4">
+                <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-4xl mx-auto">
+                    🏆
+                </div>
+                <h3 class="heading-font text-3xl font-bold text-slate-800">Petualangan Selesai!</h3>
+                <p class="text-slate-600 text-sm">Selamat, kamu telah menyelesaikan kuis eksplorasi batuan geografi!</p>
+                <div class="text-5xl font-extrabold text-amber-500 heading-font my-4" id="final-score">100</div>
+                <p id="result-message" class="text-xs text-slate-500 max-w-md mx-auto"></p>
+                <button onclick="restartQuiz()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-6 py-3 rounded-2xl text-sm transition">
+                    <i class="fa-solid fa-rotate-right mr-1"></i> Ulangi Kuis
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            <p>© 2026 Media Pembelajaran Geografi Interaktif SMA Kelas X • Kurikulum Merdeka</p>
+            <p class="mt-1 text-slate-400">Dirancang khusus untuk pembelajaran kontekstual & menyenangkan.</p>
+        </div>
+    </footer>
+
+    <!-- Object Modal -->
+    <div id="object-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 animate-scale-up">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 id="modal-title" class="heading-font text-xl font-bold text-slate-800">Detail Batuan</h3>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center font-bold">×</button>
+            </div>
+            <div class="space-y-3 text-sm text-slate-600">
+                <div id="modal-image-container" class="w-full h-48 rounded-xl overflow-hidden bg-slate-100">
+                    <img id="modal-image" src="" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-sky-50 border border-sky-100 p-3 rounded-xl text-xs text-sky-800">
+                    <strong>Jenis Batuan:</strong> <span id="modal-category"></span>
+                </div>
+                <p id="modal-description" class="text-xs leading-relaxed"></p>
+                <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl text-xs text-amber-800">
+                    <strong>Manfaat Kehidupan Sehari-hari:</strong> <span id="modal-benefit"></span>
+                </div>
+            </div>
+            <div class="pt-2 text-right">
+                <button onclick="closeModal()" class="bg-slate-800 text-white text-xs font-bold px-5 py-2.5 rounded-xl">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Data Batuan Lengkap
+        const rockData = [
+            {
+                id: 'andesit',
+                name: 'Batu Andesit',
+                type: 'beku',
+                typeName: 'Batuan Beku Luar (Efusi)',
+                image: 'https://images.unsplash.com/photo-1590736969955-71cc94801759?w=500&auto=format&fit=crop&q=80',
+                fallbackImg: 'https://placehold.co/500x300/ef4444/white?text=Batu+Andesit',
+                desc: 'Terbentuk dari pembekuan lava gunung api yang cepat di permukaan bumi. Memiliki tekstur halus hingga sedang.',
+                benefit: 'Pembuatan cobek dapur, batu candi bersejarah, fondasi gedung, dan pengeras jalan.'
+            },
+            {
+                id: 'basalt',
+                name: 'Batu Basalt',
+                type: 'beku',
+                typeName: 'Batuan Beku Luar',
+                image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80',
+                fallbackImg: 'https://placehold.co/500x300/ef4444/white?text=Batu+Basalt',
+                desc: 'Batuan beku berwarna gelap yang sangat padat, terbentuk dari lava yang membeku cepat di dasar laut/permukaan.',
+                benefit: 'Bahan pondasi jalan raya, konstruksi tiang, dan agregat beton.'
+            },
+            {
+                id: 'granit',
+                name: 'Batu Granit',
+                type: 'beku',
+                typeName: 'Batuan Beku Dalam (Plutonis)',
+                image: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?w=500&auto=format&fit=crop&q=80',
+                fallbackImg: 'https://placehold.co/500x300/ef4444/white?text=Batu+Granit',
+                desc: 'Membeku perlahan jauh di dalam perut bumi. Memiliki kristal kasar berwarna-warni yang indah dan sangat kuat.',
+                benefit: 'Meja dapur (kitchen counter), lantai mewah, monumen, dan bahan bangunan kokoh.'
+            },
+            {
+                id: 'gamping',
+                name: 'Batu Gamping (Kapur)',
+                type: 'sedimen',
+                typeName: 'Batuan Sedimen Organik/Kimiawi',
+                image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=500&auto=format&fit=crop&q=80',
+                fallbackImg: 'https://placehold.co/500x300/f59e0b/white?text=Batu+Gamping',
+                desc: 'Terbentuk dari akumulasi cangkang, karang laut, dan organisme mikroskopis selama jutaan tahun.',
+                benefit: 'Bahan utama pembuatan semen, kapur tulis, penjernih air, dan bahan bangunan.'
+            },
+            {
+                id: 'konglomerat',
+                name: 'Batu Konglomerat',
+                type: 'sedimen',
+                typeName: 'Batuan Sedimen Klastik',
+                image: 'https://images.unsplash.com/photo-1508873696983-2df515122519?w=500&auto=format&fit=crop&q=80',
+                fallbackImg: 'https://placehold.co/500x300/f59e0b/white?text=Batu+Konglomerat',
+                desc: 'Terdiri dari kerikil-kerikil bulat yang terikat/tersemen oleh lumpur dan pasir halus.',
+                benefit: 'Bahan bangunan dan hiasan ornamen dinding.'
+            },
+            {
+                id: 'marmer',
+                name: 'Batu Marmer',
+                type: 'metamorf',
+                typeName: 'Batuan Metamorf Kontak',
+                image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&auto=format&fit=crop&q=80',
+                fallbackImg: 'https://placehold.co/500x300/8b5cf6/white?text=Batu+Marmer',
+                desc: 'Hasil perubahan (metamorfosis) dari batu kapur/gamping akibat suhu sangat tinggi dari magma.',
+                benefit: 'Lantai keramik mewah, patung ukiran seni, dan meja dekoratif.'
+            },
+            {
+                id: 'sabak',
+                name: 'Batu Sabak (Slate)',
+                type: 'metamorf',
+                typeName: 'Batuan Metamorf Regional',
+                image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=500&auto=format&fit=crop&q=80',
+                fallbackImg: 'https://placehold.co/500x300/8b5cf6/white?text=Batu+Sabak',
+                desc: 'Terbentuk dari batuan sedimen batu lempung yang mengalami tekanan dan suhu tinggi. Mudah dibelah tipis.',
+                benefit: 'Atap rumah tradisional, papan tulis zaman dahulu, dan ubin dinding luar.'
+            }
+        ];
+
+        // Object Contextual Details
+        const modalObjects = {
+            cobek: {
+                title: 'Cobek Sambal (Batu Andesit)',
+                category: 'Batuan Beku Luar (Efusi)',
+                img: 'https://images.unsplash.com/photo-1590736969955-71cc94801759?w=500&auto=format&fit=crop&q=80',
+                desc: 'Cobek tradisional dibuat dari **Batu Andesit**. Batu ini adalah hasil pembekuan cepat lava dari letusan gunung berapi. Karena pendinginannya cepat, butirannya halus dan sangat keras sehingga tidak mudah tergerus saat kamu mengulek sambal!',
+                benefit: 'Alat dapur tradisional (cobek), konstruksi candi (seperti Borobudur), dan pengerasan jalan.'
+            },
+            marmer: {
+                title: 'Lantai & Meja Marmer',
+                category: 'Batuan Metamorf (Malihan)',
+                img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&auto=format&fit=crop&q=80',
+                desc: 'Lantai marmer yang dingin dan mewah merupakan hasil pencerahan batu kapur biasa yang terkena suhu panas luar biasa dekat kantong magma bumi. Tekanan dan panas melunakkan strukturnya lalu membentuk pola urat yang indah.',
+                benefit: 'Lantai bangunan mewah, ukiran patung seni kelas tinggi, dan furnitur rumah.'
+            },
+            pensil: {
+                title: 'Isi Pensil 2B (Grafit / Batu Metamorf)',
+                category: 'Batuan Metamorf (Mineral Karbon)',
+                img: 'https://images.unsplash.com/photo-1585336261026-8f57857a47ef?w=500&auto=format&fit=crop&q=80',
+                desc: 'Bagian hitam pensil yang kamu gunakan untuk menulis bukan berasal dari kayu, melainkan mineral **Grafit**. Grafit adalah karbon organik murni (dari sisa tanaman purba/batubara) yang metamorfosis di dalam bumi.',
+                benefit: 'Bahan pensil tulis, pelumas mesin kering, dan elektroda baterai.'
+            },
+            batako: {
+                title: 'Semen & Kapur Bangunan',
+                category: 'Batuan Sedimen Organik',
+                img: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=500&auto=format&fit=crop&q=80',
+                desc: 'Rumah tinggal membutuhkan semen agar batako bisa melekat kuat. Semen dibuat dari peleburan **Batu Gamping (Kapur)**. Batu kapur berasal dari endapan fosil kerang dan organisme laut jutaan tahun lalu.',
+                benefit: 'Bahan baku utama semen, pemutih cat, dan perekat konstruksi.'
+            }
+        };
+
+        // Questions Data
+        const quizQuestions = [
+            {
+                question: 'Ibu membeli cobek batu baru di pasar. Berdasarkan proses pembentukannya, tergolong jenis batuan manakah batu tersebut?',
+                image: 'https://images.unsplash.com/photo-1590736969955-71cc94801759?w=500&auto=format&fit=crop&q=80',
+                options: [
+                    'Batuan Beku (Hasil pembekuan lava)',
+                    'Batuan Sedimen (Endapan sungai)',
+                    'Batuan Metamorf (Perubahan tekanan)',
+                    'Batuan Organik (Sisa tumbuhan)'
+                ],
+                correct: 0,
+                explanation: 'Cobek batu terbuat dari batu Andesit yang merupakan Batuan Beku Luar (efusi) hasil pembekuan lava gunung api secara cepat.'
+            },
+            {
+                question: 'Perhatikan gambar berikut! Lantai bangunan mewah ini mengkilap dan indah. Jenis batuan apakah ini dan bagaimana terbentuknya?',
+                image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&auto=format&fit=crop&q=80',
+                options: [
+                    'Batu Gamping - Pengendapan laut',
+                    'Batu Marmer - Perubahan suhu & tekanan tinggi dari batu gamping',
+                    'Batu Granit - Pembekuan magma dalam',
+                    'Batu Basalt - Pendinginan lava laut'
+                ],
+                correct: 1,
+                explanation: 'Lantai tersebut menggunakan batu Marmer. Marmer adalah batuan metamorf yang berasal dari batu kapur/gamping yang mengalami kenaikan suhu dan tekanan ekstrem.'
+            },
+            {
+                question: 'Batu kapur (gamping) yang berada dekat dapur magma akan terkena panas tinggi dan berubah menjadi batu marmer. Proses ini disebut...',
+                image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=500&auto=format&fit=crop&q=80',
+                options: [
+                    'Sedimentasi',
+                    'Erosi',
+                    'Metamorfosis / Malihan',
+                    'Kristalisasi Beku'
+                ],
+                correct: 2,
+                explanation: 'Proses perubahan wujud dan sifat fisik/kimia batuan akibat pengaruh suhu (panas) atau tekanan tinggi disebut proses Metamorfosis (Metamorf).'
+            },
+            {
+                question: 'Batu apung (Pumice) sering digunakan untuk menggosok tumit kaki atau campuran semen ringan. Mengapa batu apung bisa mengapung di air?',
+                image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80',
+                options: [
+                    'Terbuat dari plastik alam',
+                    'Memiliki banyak rongga gas saat lava membeku cepat',
+                    'Berasal dari endapan minyak bumi',
+                    'Terbentuk dari es laut yang membeku'
+                ],
+                correct: 1,
+                explanation: 'Batu apung terbentuk dari semburan gas bertekanan tinggi saat lava terlempar ke udara, meninggalkan rongga-rongga udara yang membuat bobotnya sangat ringan.'
+            },
+            {
+                question: 'Batu-batu kecil sungai (kerikil) yang terendapkan di muara dan saling menyatu/tersemen bersama lumpur membentuk batuan...',
+                image: 'https://images.unsplash.com/photo-1508873696983-2df515122519?w=500&auto=format&fit=crop&q=80',
+                options: [
+                    'Konglomerat',
+                    'Obsidian',
+                    'Granit',
+                    'Sabak'
+                ],
+                correct: 0,
+                explanation: 'Batu Konglomerat adalah contoh batuan sedimen klastik yang terdiri atas fragmen kerikil-kerikil bulat yang terlekat erat oleh semen alami.'
+            }
+        ];
+
+        // App Navigation State
+        function switchTab(tabId) {
+            // Update active navigation buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active', 'text-white'));
+            const activeNav = document.getElementById('nav-' + tabId);
+            if (activeNav) activeNav.classList.add('active');
+
+            // Hide all sections
+            document.getElementById('sec-apersepsi').classList.add('hidden');
+            document.getElementById('sec-materi').classList.add('hidden');
+            document.getElementById('sec-kolaborasi').classList.add('hidden');
+            document.getElementById('sec-kuis').classList.add('hidden');
+
+            // Show selected section
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+
+            // Lazy Render Gallery if switching to materi
+            if (tabId === 'materi') {
+                renderGallery('all');
+            }
+        }
+
+        // Render Rock Gallery Cards
+        function renderGallery(filter) {
+            const container = document.getElementById('rock-gallery');
+            container.innerHTML = '';
+
+            const filtered = filter === 'all' ? rockData : rockData.filter(r => r.type === filter);
+
+            filtered.forEach(rock => {
+                let badgeColor = rock.type === 'beku' ? 'bg-red-100 text-red-700' : (rock.type === 'sedimen' ? 'bg-amber-100 text-amber-700' : 'bg-purple-100 text-purple-700');
+
+                const card = `
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm card-hover flex flex-col justify-between">
+                        <div>
+                            <div class="w-full h-44 rounded-xl overflow-hidden mb-4 bg-slate-100 relative">
+                                <img src="${rock.image}" alt="${rock.name}" class="w-full h-full object-cover" onerror="this.src='${rock.fallbackImg}'">
+                                <span class="absolute top-2 right-2 text-[10px] font-bold px-2.5 py-1 rounded-full ${badgeColor}">
+                                    ${rock.typeName}
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-lg text-slate-800 mb-1">${rock.name}</h4>
+                            <p class="text-slate-600 text-xs leading-relaxed mb-3">${rock.desc}</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mt-2">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase block tracking-wider mb-0.5">Manfaat Kontekstual</span>
+                            <p class="text-xs text-slate-700 font-medium">${rock.benefit}</p>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        function filterRock(type) {
+            document.querySelectorAll('.rock-filter').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            event.target.classList.add('bg-slate-800', 'text-white');
+            renderGallery(type);
+        }
+
+        // Siklus Batuan Interaction
+        function showCycleDetail(stage) {
+            const box = document.getElementById('cycle-detail-box');
+            const text = document.getElementById('cycle-detail-text');
+            box.classList.remove('hidden');
+
+            if (stage === 'magma') {
+                text.innerHTML = "<strong>1. Magma & Lava:</strong> Magma panas mencair jauh di dalam bumi. Ketika erupsi, ia menjadi Lava dan mendingin dengan cepat atau lambat memadat menjadi <em>Batuan Beku</em>.";
+            } else if (stage === 'beku') {
+                text.innerHTML = "<strong>2. Batuan Beku:</strong> Akibat paparan hujan, panas matahari, dan angin, batuan beku hancur menjadi serpihan kecil. Serpihan ini tererosi dan terbawa ke danau/laut.";
+            } else if (stage === 'sedimen') {
+                text.innerHTML = "<strong>3. Batuan Sedimen:</strong> Tumpukan serpihan berlapis-lapis memadat (litifikasi) menjadi <em>Batuan Sedimen</em>. Jika terus tertimbun ke dalam bumi, ia akan mengalami tekanan dan panas tinggi.";
+            } else if (stage === 'metamorf') {
+                text.innerHTML = "<strong>4. Batuan Metamorf:</strong> Panas ekstrim dekat magma merubah struktur mineral batuan sedimen/beku menjadi <em>Batuan Metamorf (Malihan)</em>. Jika panasnya terus naik, batu meleleh kembali menjadi Magma!";
+            }
+        }
+
+        // Modal Logic
+        function openModalObject(key) {
+            const item = modalObjects[key];
+            if (!item) return;
+
+            document.getElementById('modal-title').innerText = item.title;
+            document.getElementById('modal-category').innerText = item.category;
+            document.getElementById('modal-image').src = item.img;
+            document.getElementById('modal-description').innerHTML = item.desc;
+            document.getElementById('modal-benefit').innerText = item.benefit;
+
+            document.getElementById('object-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('object-modal').classList.add('hidden');
+        }
+
+        // Submit Group Worksheet
+        function submitGroupWork() {
+            const name = document.getElementById('group-name').value;
+            const caseNum = document.getElementById('group-case').value;
+            const answer = document.getElementById('group-answer').value;
+
+            if (!name || !answer) {
+                alert('Silakan isi nama kelompok dan hasil analisis diskusi terlebih dahulu!');
+                return;
+            }
+
+            document.getElementById('res-group-title').innerText = `✅ Hasil Jawaban: ${name} (Studi Kasus ${caseNum})`;
+            document.getElementById('res-group-body').innerText = answer;
+            document.getElementById('saved-result').classList.remove('hidden');
+
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.8 }
+            });
+        }
+
+        // KUIS INTERAKTIF LOGIC
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            answered = false;
+            const q = quizQuestions[currentQuestionIdx];
+
+            document.getElementById('quiz-progress-text').innerText = `Pertanyaan ${currentQuestionIdx + 1} dari ${quizQuestions.length}`;
+            document.getElementById('quiz-progress-bar').style.width = `${((currentQuestionIdx + 1) / quizQuestions.length) * 100}%`;
+
+            document.getElementById('quiz-image').src = q.image;
+            document.getElementById('quiz-question').innerText = q.question;
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 rounded-xl border border-slate-200 hover:border-sky-500 hover:bg-sky-50/50 transition flex items-center gap-3 text-xs sm:text-sm font-medium text-slate-700';
+                btn.innerHTML = `<span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-500">${String.fromCharCode(65 + idx)}</span> ${opt}`;
+                btn.onclick = () => selectOption(idx);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('quiz-feedback').classList.add('hidden');
+        }
+
+        function selectOption(selectedIdx) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizQuestions[currentQuestionIdx];
+            const optionsBtns = document.getElementById('quiz-options').children;
+            const feedbackBox = document.getElementById('quiz-feedback');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackText = document.getElementById('feedback-text');
+
+            if (selectedIdx === q.correct) {
+                score += 20;
+                document.getElementById('current-score').innerText = score;
+                optionsBtns[selectedIdx].classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900');
+                
+                feedbackBox.className = 'mt-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 block';
+                feedbackTitle.innerText = '🎉 Jawaban Tepat sekali!';
+                
+                confetti({ particleCount: 30, spread: 50 });
+            } else {
+                optionsBtns[selectedIdx].classList.add('bg-red-100', 'border-red-500', 'text-red-900');
+                optionsBtns[q.correct].classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900');
+
+                feedbackBox.className = 'mt-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-900 block';
+                feedbackTitle.innerText = '❌ Jawaban Kurang Tepat';
+            }
+
+            feedbackText.innerText = q.explanation;
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+
+            let msg = '';
+            if (score === 100) {
+                msg = 'Luar biasa! Kamu adalah Geolog Sejati! Semua konsep batuan telah kamu kuasai dengan sempurna.';
+                confetti({ particleCount: 100, spread: 100, origin: { y: 0.6 } });
+            } else if (score >= 60) {
+                msg = 'Bagus sekali! Kamu sudah memahami konsep dasar jenis batuan dalam kehidupan sehari-hari.';
+            } else {
+                msg = 'Jangan berkecil hati! Yuk ulangi lagi dan eksplorasi tab Materi agar pemahamanmu makin tajam!';
+            }
+            document.getElementById('result-message').innerText = msg;
+        }
+
+        function restartQuiz() {
+            currentQuestionIdx = 0;
+            score = 0;
+            document.getElementById('current-score').innerText = '0';
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        // Initialize App
+        window.onload = function() {
+            loadQuestion();
+            renderGallery('all');
+        }
+    </script>
+</body>
+</html>
